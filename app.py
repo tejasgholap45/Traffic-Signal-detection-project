@@ -2,6 +2,8 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import gdown
+import os
 
 # Page config
 st.set_page_config(page_title="Traffic Sign Recognition", layout="centered")
@@ -9,10 +11,16 @@ st.set_page_config(page_title="Traffic Sign Recognition", layout="centered")
 st.title("🚦 Traffic Sign Recognition App")
 st.write("Upload a traffic sign image and the CNN model will predict the sign.")
 
-# Load model
+# Google Drive model link (FIXED)
+MODEL_URL = "https://drive.google.com/uc?id=1IsBhzfN6qzSHwfl-F7u6GCO6wRk533mj"
+MODEL_PATH = "traffic_sign_cnn.h5"
+
+# Download model if not exists
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("traffic_sign_cnn.h5")
+    if not os.path.exists(MODEL_PATH):
+        gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+    return tf.keras.models.load_model(MODEL_PATH)
 
 model = load_model()
 
@@ -81,3 +89,4 @@ if uploaded_file is not None:
 
     st.success(f"🛑 Predicted Sign: **{gtsrb_classes[class_id]}**")
     st.info(f"📊 Confidence: **{confidence:.2f}%**")
+
